@@ -1,36 +1,35 @@
-# This is a basic workflow to help you get started with Actions
+#自动调用api保活，加密版
+name: Auto Api Task
 
-name: CI
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+on: 
+  release:
+    types: [published]
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    branches: 
+      - master
+  schedule:
+    - cron: '12 */3 * * *'
+  watch:
+    types: [started]
+   
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+   Task:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    if: github.event.repository.owner.id == github.event.sender.id  # 自己点的 start
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Make time log #make time log
+      run: | 
+      	echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
+        
+    - name: Commit #上传新的refresh_token到仓库
+      run: |
+        git config --global user.email 1304024859@qq.com
+        git config --global user.name zzy-ac
+        git add .
+        git commit -m "update new time.log" -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
