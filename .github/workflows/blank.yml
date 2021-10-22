@@ -29,6 +29,6 @@ jobs:
         git add .
         git commit -m "update new time.log" -a
     - name: Push changes
-      uses: zzy-ac/auto-push@master
+      uses: zzy-ac/auto-push@main
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
